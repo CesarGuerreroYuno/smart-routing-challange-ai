@@ -103,7 +103,8 @@ interface DashboardStore {
 export const useDashboardStore = create<DashboardStore>((set) => ({
   // ── Initial state ───────────────────────────────────────────────────────────
   incident: INCIDENT_DATA,
-  currentSimulatedTime: BASE_DATE,
+  // Start 30 min into the incident (18:30 BRT) so charts show data immediately on load
+  currentSimulatedTime: new Date(INCIDENT_START.getTime() + 30 * 60_000),
   isSimulating: true, // auto-start per spec
   simulationSpeed: 1,
   filters: DEFAULT_FILTERS,
