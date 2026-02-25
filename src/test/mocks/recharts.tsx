@@ -1,20 +1,18 @@
 /**
  * recharts.tsx — Vitest mock for Recharts components
  *
- * [IMP-16] jsdom reports 0×0 dimensions for all DOM elements, which causes
- * ResponsiveContainer to render nothing (it uses ResizeObserver internally).
- * This mock replaces ResponsiveContainer with a plain div of known dimensions,
- * making all chart component tests work correctly in jsdom.
+ * [IMP-16] jsdom reports 0×0 dimensions for all DOM elements.
+ * ResponsiveContainer uses ResizeObserver and renders nothing in jsdom.
+ * This mock replaces every Recharts component with a minimal stub so
+ * chart tests can assert on rendered content without hanging.
  *
- * Usage in test files:
+ * Usage in a test file:
  *   vi.mock('recharts', () => import('../../test/mocks/recharts'));
- *
- * Or register globally in vitest.config.ts setupFiles if all chart tests need it.
  */
 
-import * as actual from 'recharts';
 import type { ReactNode } from 'react';
 
+// Render children in a known-size div
 export const ResponsiveContainer = ({
   children,
 }: {
@@ -27,22 +25,29 @@ export const ResponsiveContainer = ({
   </div>
 );
 
-// Re-export everything else from recharts unchanged
-export const {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  ComposedChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ReferenceLine,
-  ReferenceArea,
-} = actual;
+// Chart containers — render children so nested components show up
+const passthrough =
+  (tag = 'div') =>
+  ({ children }: { children?: ReactNode; [key: string]: unknown }) =>
+    <div data-recharts={tag}>{children}</div>;
+
+export const LineChart = passthrough('LineChart');
+export const BarChart = passthrough('BarChart');
+export const PieChart = passthrough('PieChart');
+export const ComposedChart = passthrough('ComposedChart');
+
+// Leaf components — render nothing (they use SVG internally)
+const noop = () => null;
+
+export const Line = noop;
+export const Bar = noop;
+export const Area = noop;
+export const Pie = noop;
+export const Cell = noop;
+export const XAxis = noop;
+export const YAxis = noop;
+export const CartesianGrid = noop;
+export const Tooltip = noop;
+export const Legend = noop;
+export const ReferenceLine = noop;
+export const ReferenceArea = noop;
