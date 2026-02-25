@@ -26,3 +26,6 @@ dist-ssr
 # Test coverage
 coverage
 .vercel
+
+# macOS screenshot originals (renamed copies live in docs/screenshots/)
+Captura de pantalla*
